@@ -1,9 +1,8 @@
 export function normalizeLocation(raw) {
   if (!raw) return null;
   return {
-    id: raw.location_id,            // keep original id (string slug)
-    name: raw.location_name || '',  // user display name
-    // add derived fields if needed
+    id: raw.location_id,
+    name: raw.location_name || '',
   };
 }
 
