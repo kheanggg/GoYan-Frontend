@@ -9,9 +9,8 @@ import useVehicleTypes from "@/features/onboarding/hooks/useVehicleTypes";
 import Button from "@/components/core/Button";
 
 export default function BoardingPage() {
-  // data hooks (separate hooks, separate names)
-  const { locations, loading: loadingLocations, refresh: refreshLocations } = useLocations();
-  const { vehicleTypes, loading: loadingVehicleTypes, refresh: refreshVehicleTypes } = useVehicleTypes();
+  const { locations, loading: loadingLocations} = useLocations();
+  const { vehicleTypes, loading: loadingVehicleTypes} = useVehicleTypes();
 
   const loading = loadingLocations || loadingVehicleTypes;
 
@@ -61,51 +60,51 @@ export default function BoardingPage() {
     <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-blue-600 to-purple-700">
       <div className="px-3 w-full max-w-sm space-y-5">
         {loading ? (
-            <div className="flex justify-center items-center">
-              <div className="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+          <div className="flex justify-center items-center">
+            <div className="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        ) : (
+          <>
+            <div className="text-white">
+              <h1 className="text-3xl font-semibold">Destination</h1>
+              <p className="mt-1 text-md opacity-80">
+                Select your location, vehicle type, and travel date
+              </p>
             </div>
-          ) : (
-            <>
-              <div className="text-white">
-          <h1 className="text-3xl font-semibold">Destination</h1>
-          <p className="mt-1 text-md opacity-80">
-            Select your location, vehicle type, and travel date
-          </p>
-        </div>
 
-        <div className="px-2 py-2 space-y-2 bg-white/80 rounded-lg">
-          <Dropdown
-            options={locationOptions}
-            value={selectedLocation}
-            onChange={setSelectedLocation}
-            placeholder="Select a province"
-            icon={MapPin}
-            error={errors.location}
-          />
+            <div className="px-2 py-2 space-y-2 bg-white/80 rounded-lg">
+              <Dropdown
+                options={locationOptions}
+                value={selectedLocation}
+                onChange={setSelectedLocation}
+                placeholder="Select a province"
+                icon={MapPin}
+                error={errors.location}
+              />
 
-          <Dropdown
-            options={vehicleOptions}
-            value={selectedVehicleType}
-            onChange={setSelectedVehicleType}
-            placeholder="Select vehicle type"
-            icon={Bike}
-            error={errors.vehicleType}
-          />
+              <Dropdown
+                options={vehicleOptions}
+                value={selectedVehicleType}
+                onChange={setSelectedVehicleType}
+                placeholder="Select vehicle type"
+                icon={Bike}
+                error={errors.vehicleType}
+              />
 
-          <CustomDatePicker
-            value={selectedDate}
-            onChange={setSelectedDate}
-            error={errors.date}
-          />
-        </div>
+              <CustomDatePicker
+                value={selectedDate}
+                onChange={setSelectedDate}
+                error={errors.date}
+              />
+            </div>
 
-        <div className="flex justify-between items-center gap-2">
-          <Button onClick={handleContinue} disabled={loading}>
-            Continue
-          </Button>
-        </div>
-            </>
-          )}
+            <div className="flex justify-between items-center gap-2">
+              <Button onClick={handleContinue} disabled={loading}>
+                Continue
+              </Button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
