@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { fetchVehicles } from '../api/vehicles';
+import { fetchVehicles } from '../api/vehicle';
 
 /**
  * useVehicles

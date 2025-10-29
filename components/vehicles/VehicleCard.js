@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { MapPin } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 /**
  * Props:
@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
  */
 export default function VehicleCard({ vehicle = {}, onSelect }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   // Support both shapes: normalized or raw
   const raw = vehicle ?? '';
@@ -41,13 +42,15 @@ export default function VehicleCard({ vehicle = {}, onSelect }) {
   const image =
     raw?.media?.[0]?.url ?? '/images/vehicle/placeholder.jpg';
 
+  const qs = searchParams?.toString() ? `?${searchParams.toString()}` : '';
+
   const handleClick = (e) => {
     if (onSelect && typeof onSelect === 'function') {
       onSelect(vehicle);
       return;
     }
-    // default navigation
-    router.push(`/vehicles/${encodeURIComponent(id)}`);
+    // default navigation to vehicle detail, preserving querystring
+    router.push(`/vehicles/${encodeURIComponent(id)}${qs}`);
   };
 
   // safe image error handler

@@ -6,6 +6,7 @@ import { ChevronLeft } from 'lucide-react';
 import SearchBar from '@/components/vehicles/Searchbar';
 import VehicleCard from '@/components/vehicles/VehicleCard';
 import useVehicles from '@/features/vehicles/hooks/useVehicles';
+import { useRouter } from 'next/navigation';
 
 export default function VehicleListClient() {
   const searchParams = useSearchParams();
@@ -32,7 +33,10 @@ export default function VehicleListClient() {
         })
       : 'Unknown Dates';
 
-  const onBack = () => window.history.back();
+  const router = useRouter();
+  const onBack = () => {
+    router.push('/');
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center bg-gray-50">
