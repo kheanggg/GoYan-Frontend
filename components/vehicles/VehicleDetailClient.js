@@ -1,11 +1,12 @@
 'use client';
 import React from 'react';
-import { useSearchParams } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
 import ConfirmationButton from './ConfirmationButton';
 import useVehicleDetail from '@/features/vehicles/hooks/useVehicleDetail';
+import { useRouter } from 'next/navigation';
 
 export default function VehicleDetailClient({ vehicleId }) {
+    const router = useRouter();
     const { vehicle, loading, error, refetch } = useVehicleDetail(vehicleId);
 
     if (loading) return <div className="bg-white min-h-screen flex justify-center items-center py-10">
@@ -15,6 +16,13 @@ export default function VehicleDetailClient({ vehicleId }) {
     if (!vehicle) return <div>Not found</div>;
 
     const handleBack = () => { window.history.back(); }
+
+    const handleConfirmation = () => {
+        const searchParams = new URLSearchParams(window.location.search);
+        const qs = searchParams.toString() ? `?${searchParams.toString()}` : '';
+
+        router.push(`/confirmation/${encodeURIComponent(vehicle.id)}${qs}`);
+    };
 
     return (
         <div className="h-screen bg-white flex flex-col items-center overflow-hidden">
@@ -79,7 +87,7 @@ export default function VehicleDetailClient({ vehicleId }) {
                 </div>
 
                 <div className="fixed bottom-4 w-full max-w-sm">
-                    <ConfirmationButton price={vehicle?.rental_price_per_day} />
+                    <ConfirmationButton price={vehicle?.rental_price_per_day} onClick={handleConfirmation} />
                 </div>
             </div>
         </div>
