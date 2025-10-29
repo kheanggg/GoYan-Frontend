@@ -33,6 +33,12 @@ export async function fetchVehicle(vehicleId, params = {}) {
   return res.data;
 }
 
+export async function fetchVehicleById(vehicleId) {
+  if (!vehicleId) throw new Error('vehicleId is required');
+  const res = await apiClient.get(`/vehicles/${encodeURIComponent(vehicleId)}`); // hits /vehicles/id
+  return res.data; // { success, data }
+}
+
 /**
  * Example convenience functions:
  */
