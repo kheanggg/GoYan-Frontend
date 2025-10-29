@@ -5,25 +5,25 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { fetchVehicles } from '../api/vehicles';
 
 /**
- * useVehicles hook
- * @param {Object} initialParams initial query params { location, start, end, type, q, page, per_page }
- * @param {Object} options { immediate: true|false }
- * @returns { data, meta, loading, error, refetch, setParams }
+ * useVehicles
+ * @param {Object} initialParams - initial query params { location, start, end, type, q, page, per_page }
+ * @param {Object} options - { immediate: true, auto: true }
+ *    - immediate: run initial load on mount
+ *    - auto: refetch automatically when params change
  */
-export function useVehicles(initialParams = {}, options = { immediate: true }) {
+export function useVehicles(initialParams = {}, options = { immediate: true, auto: true }) {
   const [params, setParams] = useState(initialParams);
   const [data, setData] = useState([]);
   const [meta, setMeta] = useState(null);
   const [loading, setLoading] = useState(Boolean(options.immediate));
   const [error, setError] = useState(null);
 
-  // store current abort controller so we can cancel previous request
   const controllerRef = useRef(null);
 
   const load = useCallback(async (overrideParams = null) => {
     const p = overrideParams ? { ...overrideParams } : { ...params };
 
-    // cancel previous
+    // abort previous request
     if (controllerRef.current) {
       try { controllerRef.current.abort(); } catch (e) { /* ignore */ }
     }
@@ -34,19 +34,42 @@ export function useVehicles(initialParams = {}, options = { immediate: true }) {
     setError(null);
 
     try {
-      // axios supports fetch-style signal
-      const res = await fetchVehicles(p, { signal: controller.signal });
-      // res is the API envelope, normalize:
-      const items = Array.isArray(res.data) ? res.data : (res.items || []);
+      // If your fetchVehicles supports passing signal, update its signature and forward it.
+      // For now we call fetchVehicles(p) and expect it to return an axios-like response or API envelope.
+      const res = await fetchVehicles(p);
+
+      // Normalize envelope:
+      // - If fetchVehicles already returned the envelope (res), use that
+      // - If fetchVehicles returned axios response (res.data), use res.data
+      const envelope = res && res.data ? res.data : res;
+
+      // Determine items array
+      const items = Array.isArray(envelope?.data)
+        ? envelope.data
+        : Array.isArray(envelope?.items)
+        ? envelope.items
+        : Array.isArray(envelope)
+        ? envelope
+        : [];
+
       setData(items);
-      setMeta(res.meta || null);
+      setMeta(envelope?.meta ?? null);
       setLoading(false);
-      return res;
+
+      return envelope;
     } catch (err) {
-      if (err?.name === 'AbortError') {
-        // request canceled
+      // axios Abort/Canceled errors vary by version/name
+      const isAbort =
+        err?.name === 'AbortError' ||
+        err?.name === 'CanceledError' ||
+        err?.__CANCEL__ === true ||
+        (err?.message && err.message.toLowerCase().includes('canceled'));
+
+      if (isAbort) {
+        // cancelled - don't set global error
         return;
       }
+
       setError(err);
       setLoading(false);
       return Promise.reject(err);
@@ -58,13 +81,21 @@ export function useVehicles(initialParams = {}, options = { immediate: true }) {
     if (options.immediate) {
       load();
     }
-    // cleanup: abort when unmount
     return () => {
       if (controllerRef.current) {
         try { controllerRef.current.abort(); } catch (e) {}
       }
     };
-  }, []); // eslint-disable-line
+  // intentionally include load in deps so cleanup and recreate happen correctly
+  }, [load, options.immediate]);
+
+  // auto-refetch when params change (if enabled)
+  useEffect(() => {
+    if (!options.auto) return;
+    // skip initial fetch if immediate happened (load() was already called on mount)
+    // but it's okay to call load() again; dedupe if needed
+    load();
+  }, [JSON.stringify(params)]); // stringify so deep equality triggers reload when params change
 
   const refetch = useCallback(() => load(), [load]);
 
