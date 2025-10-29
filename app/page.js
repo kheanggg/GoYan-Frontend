@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { MapPin, Bike } from "lucide-react";
 import CustomDatePicker from "@/components/boarding/CustomDatePicker";
 import Dropdown from "@/components/boarding/Dropdown";
@@ -9,8 +10,9 @@ import useVehicleTypes from "@/features/onboarding/hooks/useVehicleTypes";
 import Button from "@/components/core/Button";
 
 export default function BoardingPage() {
-  const { locations, loading: loadingLocations} = useLocations();
-  const { vehicleTypes, loading: loadingVehicleTypes} = useVehicleTypes();
+  const router = useRouter();
+  const { locations, loading: loadingLocations } = useLocations();
+  const { vehicleTypes, loading: loadingVehicleTypes } = useVehicleTypes();
 
   const loading = loadingLocations || loadingVehicleTypes;
 
@@ -24,7 +26,7 @@ export default function BoardingPage() {
   const [selectedVehicleType, setSelectedVehicleType] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
 
-  // Memoized options to avoid recreating arrays on each render
+  // Memoized options
   const locationOptions = useMemo(
     () => (locations || []).map((p) => ({ value: p.id, label: p.name })),
     [locations]
@@ -42,18 +44,23 @@ export default function BoardingPage() {
       date: !selectedDate,
     };
     setErrors(newErrors);
-    // return true if valid
     return !Object.values(newErrors).some(Boolean);
   }
 
   function handleContinue() {
     if (!validate()) return;
 
-    console.log("continue with", {
-      selectedLocation,
-      selectedVehicleType,
-      selectedDate,
-    });
+    // Convert date to YYYY-MM-DD
+    const date = selectedDate.toISOString().split("T")[0];
+
+    // Build the URL
+    const url = `/vehicles?location=${encodeURIComponent(
+      selectedLocation
+    )}&start=${date}&end=${date}&type=${encodeURIComponent(
+      selectedVehicleType
+    )}`;
+
+    router.push(url);
   }
 
   return (
