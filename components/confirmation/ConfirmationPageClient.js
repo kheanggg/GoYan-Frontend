@@ -58,7 +58,8 @@ export default function ConfirmationPageClient({ vehicleId }) {
             return;
         }
         setErrorMessage('');
-        router.push('/payment-option');
+        const qs = searchParams.toString() ? `?${searchParams.toString()}` : '';
+        router.push(`/payment-option/${encodeURIComponent(vehicle.id)}${qs}`);
     };
 
     const handleBack = () => router.push('/');
