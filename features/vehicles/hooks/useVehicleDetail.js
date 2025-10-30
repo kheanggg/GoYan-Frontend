@@ -1,4 +1,3 @@
-// features/vehicles/hooks/useVehicleDetail.js
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -30,7 +29,6 @@ export function useVehicleDetail(vehicleId, options = { immediate: true }) {
     setError(null);
 
     try {
-      console.log('Fetching vehicle ID:', id); // Debug log
       const res = await fetchVehicleById(id);
       const data = res?.data ?? res ?? null;
 

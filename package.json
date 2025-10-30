@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@twa-dev/sdk": "^8.0.2",
     "axios": "^1.12.2",
     "canvas-confetti": "^1.9.4",
     "lucide-react": "^0.548.0",

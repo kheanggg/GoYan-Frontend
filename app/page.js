@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { MapPin, Bike } from "lucide-react";
 import CustomDatePicker from "@/components/boarding/CustomDatePicker";
@@ -8,6 +8,8 @@ import Dropdown from "@/components/boarding/Dropdown";
 import useLocations from "@/features/onboarding/hooks/useLocations";
 import useVehicleTypes from "@/features/onboarding/hooks/useVehicleTypes";
 import Button from "@/components/core/Button";
+
+
 
 export default function BoardingPage() {
   const router = useRouter();
