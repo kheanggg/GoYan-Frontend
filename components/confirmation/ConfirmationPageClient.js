@@ -2,17 +2,33 @@
 
 import { ChevronLeft } from "lucide-react";
 import useVehicleDetail from '@/features/vehicles/hooks/useVehicleDetail';
+import useUser from "@/features/booking/hooks/useUser";
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useState } from 'react';
-import Button from '@/components/core/Button'; // adjust path to your Button component
+import { useState, useEffect } from 'react';
+import Button from '@/components/core/Button';
+import dynamic from "next/dynamic";
+
+const WebApp = dynamic(() => import("@twa-dev/sdk"), { ssr: false });
 
 export default function ConfirmationPageClient({ vehicleId }) {
     const router = useRouter();
+    const [telegramId, setTelegramId] = useState(null);
+    const fallbackTelegramId = process.env.NEXT_PUBLIC_FALLBACK_TELEGRAM_ID;
 
-    const person_info = {
-        name: "Nai Mengkheang",
-        phone: "+855 12 345 678",
-    };
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            import("@twa-dev/sdk").then((mod) => {
+            const WebApp = mod.default;
+            WebApp.ready();
+            const id = WebApp.initDataUnsafe?.user?.id;
+            setTelegramId(id ?? fallbackTelegramId);
+            });
+        }
+    }, []);
+
+    // Always call hooks in the same order
+    const { user, loading: loadingUser, error: userError } = useUser(telegramId, { autoLoad: !!telegramId });
+    const { vehicle, loading: loadingVehicle, error: vehicleError } = useVehicleDetail(vehicleId);
 
     const [agreed, setAgreed] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
@@ -20,7 +36,6 @@ export default function ConfirmationPageClient({ vehicleId }) {
 
     const searchParams = useSearchParams();
     const rentDate = searchParams.get('start') || 'N/A';
-
     const formattedDate = rentDate
         ? new Date(rentDate).toLocaleDateString('en-US', {
             month: 'long',
@@ -28,29 +43,39 @@ export default function ConfirmationPageClient({ vehicleId }) {
         })
         : 'Unknown Dates';
 
-    const { vehicle, loading, error } = useVehicleDetail(vehicleId);
+    // Show loading if any async data is not ready
+    if (!telegramId || loadingUser || loadingVehicle) return (
+        <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-blue-600 to-purple-700">
+            <div className="px-3 w-full max-w-sm space-y-5">
+            <div className="flex justify-center items-center">
+                <div className="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+            </div>
+            </div>
+        </div>
+    );
 
-    if (loading) return <div className="bg-white min-h-screen flex justify-center items-center py-10">
-        <div className="w-8 h-8 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-    </div>;
-    if (error) return <div>Error loading vehicle</div>;
-    if (!vehicle) return <div>Not found</div>;
+    if (userError) return <div>Error loading user</div>;
+    if (vehicleError) return <div>Error loading vehicle</div>;
+    if (!vehicle) return <div>Vehicle not found</div>;
+
+    const person_info = {
+        name: [user?.first_name, user?.last_name].filter(Boolean).join(' ') || 'Guest User',
+        phone: user?.phone_number || "+855 12 345 678",
+    };
 
     const vehicleName = vehicle?.name || 'Unknown Vehicle';
     const shopName = vehicle?.shop?.name || 'Unknown Shop';
     const quantity = 1;
 
-    const subTotal = Number.isFinite(Number(vehicle?.rental_price_per_day)) ? Number(vehicle.rental_price_per_day) : 0;
+    const subTotal = Number(vehicle?.rental_price_per_day) || 0;
     const discount = coupon === 'SAVE10' ? subTotal * 0.1 : 0;
     const total = subTotal - discount;
 
-    const formatMoney = (value) => {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            maximumFractionDigits: 2
-        }).format(value);
-    };
+    const formatMoney = (value) => new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        maximumFractionDigits: 2
+    }).format(value);
 
     const handleCheckout = () => {
         if (!agreed) {
@@ -80,7 +105,7 @@ export default function ConfirmationPageClient({ vehicleId }) {
                     <h2 className="text-lg font-semibold mb-3">Information</h2>
                     <div className="space-y-2 text-sm">
                         <p><span className="font-medium">Name:</span> {person_info.name}</p>
-                        <p><span className="font-medium">Phone Number:</span> {person_info.phone}</p>
+                        <p><span className="font-medium">Phone Number:</span> +{person_info.phone}</p>
                         <p><span className="font-medium">Vehicle:</span> {vehicleName}</p>
                         <p><span className="font-medium">Rent Date:</span> {formattedDate}</p>
                         <p><span className="font-medium">Shop:</span> {shopName}</p>
