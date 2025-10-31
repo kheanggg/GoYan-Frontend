@@ -1,11 +1,4 @@
 {
-  "redirects": [
-    {
-      "source": "/",
-      "destination": "/",
-      "permanent": true
-    }
-  ],
   "headers": [
     {
       "source": "/api/(.*)",
