@@ -13,6 +13,7 @@ const WebApp = dynamic(() => import("@twa-dev/sdk"), { ssr: false });
 export default function ConfirmationPageClient({ vehicleId }) {
     const router = useRouter();
     const [telegramId, setTelegramId] = useState(null);
+    const fallbackTelegramId = process.env.NEXT_PUBLIC_FALLBACK_TELEGRAM_ID;
 
     useEffect(() => {
         if (typeof window !== "undefined") {
@@ -20,7 +21,7 @@ export default function ConfirmationPageClient({ vehicleId }) {
             const WebApp = mod.default;
             WebApp.ready();
             const id = WebApp.initDataUnsafe?.user?.id;
-            setTelegramId(id || null);
+            setTelegramId(id ?? fallbackTelegramId);
             });
         }
     }, []);

@@ -9,8 +9,6 @@ import useLocations from "@/features/onboarding/hooks/useLocations";
 import useVehicleTypes from "@/features/onboarding/hooks/useVehicleTypes";
 import Button from "@/components/core/Button";
 
-
-
 export default function BoardingPage() {
   const router = useRouter();
   const { locations, loading: loadingLocations } = useLocations();
