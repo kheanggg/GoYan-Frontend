@@ -57,7 +57,7 @@ export default function VehicleCard({ vehicle = {}, onSelect }) {
   const handleImgError = (e) => {
     // prevent infinite loop
     e.currentTarget.onerror = null;
-    e.currentTarget.src = '/images/vehicles/placeholder.png';
+    e.currentTarget.src = '/images/vehicle/placeholder.jpg';
   };
 
   return (

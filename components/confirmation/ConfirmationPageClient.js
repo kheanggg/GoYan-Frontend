@@ -38,10 +38,11 @@ export default function ConfirmationPageClient({ vehicleId }) {
     const rentDate = searchParams.get('start') || 'N/A';
     const formattedDate = rentDate
         ? new Date(rentDate).toLocaleDateString('en-US', {
+            day: 'numeric',
             month: 'long',
             year: 'numeric',
-        })
-        : 'Unknown Dates';
+            })
+        : 'Unknown Date';
 
     // Show loading if any async data is not ready
     if (!telegramId || loadingUser || loadingVehicle) return (
