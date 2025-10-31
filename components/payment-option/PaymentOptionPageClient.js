@@ -95,6 +95,7 @@ export default function PaymentOptionPageClient({ vehicleId }) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true"
         },
         body: JSON.stringify(bookingData),
       });
