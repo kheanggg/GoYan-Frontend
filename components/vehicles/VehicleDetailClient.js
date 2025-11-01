@@ -4,6 +4,7 @@ import { ChevronLeft } from 'lucide-react';
 import ConfirmationButton from './ConfirmationButton';
 import useVehicleDetail from '@/features/vehicles/hooks/useVehicleDetail';
 import { useRouter } from 'next/navigation';
+import VendorCard from './VendorCard';
 
 export default function VehicleDetailClient({ vehicleId }) {
     const router = useRouter();
@@ -49,7 +50,10 @@ export default function VehicleDetailClient({ vehicleId }) {
                 <div className="max-w-sm w-full flex flex-col h-full">
                     <div className="flex-shrink-0 sticky top-0 bg-white z-10 pb-3">
                         <p className="text-2xl font-semibold text-black">{vehicle?.name}</p>
-                        <p className="text-md text-gray-500">{vehicle?.shop.name}</p>
+                    </div>
+
+                    <div>
+                        <VendorCard name={vehicle?.shop.name}/>
                     </div>
 
                     <div className="mt-2 w-full overflow-y-scroll flex-1 pr-2 pb-20 no-scrollbar" style={{ minHeight: 0 }}>

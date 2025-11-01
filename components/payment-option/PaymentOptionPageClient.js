@@ -123,7 +123,7 @@ export default function PaymentOptionPageClient({ vehicleId }) {
         <h1 className="text-xl font-semibold">Payment Option</h1>
       </div>
 
-      <div className="max-w-sm w-full mt-6 flex flex-col space-y-4 px-4">
+      <div className="w-full mt-6 flex flex-col space-y-4 px-4">
         {paymentMethods.map((method) => (
           <div
             key={method.name}
@@ -160,7 +160,7 @@ export default function PaymentOptionPageClient({ vehicleId }) {
         </div>
       </div>
 
-      <div className="fixed bottom-4 w-full max-w-sm px-4">
+      <div className="fixed bottom-4 w-full px-4">
         <Button
           onClick={handleProceed}
           variant="secondary"
