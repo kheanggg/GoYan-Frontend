@@ -46,12 +46,8 @@ export default function ConfirmationPageClient({ vehicleId }) {
 
     // Show loading if any async data is not ready
     if (!telegramId || loadingUser || loadingVehicle) return (
-        <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-blue-600 to-purple-700">
-            <div className="px-3 w-full max-w-sm space-y-5">
-            <div className="flex justify-center items-center">
-                <div className="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-            </div>
-            </div>
+        <div className="bg-white min-h-screen flex justify-center items-center py-10">
+            <div className="w-8 h-8 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
         </div>
     );
 
